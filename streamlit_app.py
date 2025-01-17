@@ -2,19 +2,49 @@ import streamlit as st
 import pandas as pd
 from datetime import datetime
 from typing import Dict, List
+import requests
+import json
 
 is_challenge_1_complete = False
 is_challenge_2_complete = False
+is_challenge_3_complete = False
 
 # Config and page setup
 st.set_page_config(page_title="SnapLogic GenAI Workshop", layout="centered")
 
 def get_credentials() -> Dict[str, str]:
     """Return mock credentials for the workshop."""
+    url = "https://emea.snaplogic.com/api/1/rest/slsched/feed/ConnectFasterInc/0_StanGPT/StanCoE/Workshops_RetrieveNextAvailableCredentials_Task"
+    bearer = "SUnx6ZN9Dt8xQCwtUdzNJIkoC3CipCiX"
+    headers = {
+        "Authorization": f"Bearer {bearer}",
+        "Content-Type": "application/json"
+    }
+    
+    response = requests.get(
+        url,
+        headers=headers
+    )
+    
+    response.raise_for_status()
+    data = response.json()[0]
+    # st.write(data)
+    
+    username = data["username"]
+    password = data["password"]
+    url = data["pipelineUrl"]
+    
+    if "username" not in st.session_state:
+        st.session_state['username'] = username
+    if "password" not in st.session_state:
+        st.session_state['password'] = password
+    if "url" not in st.session_state:
+        st.session_state['url'] = url
+    
     return {
-        "username": "workshop_user_2024",
-        "password": "hackathon#123",
-        "url": "https://cdn.emea.snaplogic.com/sl/designer.html?v=20842#pipe_snode=671221badb1d381136a8433d"
+        "username": username,
+        "password": password,
+        "url": url
     }
 
 def get_workshop_tips() -> List[str]:
@@ -44,20 +74,30 @@ def get_sample_leaderboard() -> List[Dict[str, str]]:
         {"Rank": 5, "Name": "Eve@email.com", "SubmissionTime": datetime(2025, 1, 10, 11, 5, 6).strftime("%H:%M:%S")},
     ]
     
-def validate_submission(submission: str) -> bool:
+def validate_submission(submission: str, challenge: int) -> bool:
     """Validate user submission with mock rules."""
+    if challenge == 1:
+        return "92" in submission.lower()
+    if challenge == 2: 
+        return "384" in submission.lower()
+    if challenge == 3:
+        return "power" in submission.lower()
     return True
+
 
 # Main app layout
 st.title("SnapLogic GenAI Workshop Portal")
 
 # Credentials section
 st.subheader("Get Started")
-team_name = st.text_input("Enter Your Team Name")
+team_name = st.text_input("Enter Your Team Name (or your own name if remote/solo)")
 if len(team_name) > 0:
     if st.button("Get My Credentials"):
+        if "team_name" not in st.session_state:
+            st.session_state['team_name'] = team_name
+        
         creds = get_credentials()
-        st.write("Here are your workshop credentials:")
+        st.write("Here are your workshop credentials (do not refresh this page or they will disappear):")
         st.write(f"Username: {creds['username']}")
         st.write(f"Password: {creds['password']}")
         st.link_button("Login", url=creds['url'])
@@ -75,44 +115,75 @@ if len(team_name) > 0:
 
     # Submission form
     st.subheader("Submit Your Answers")
-    user_submission_1 = st.text_area("What’s the total group energy consumption in 2022?")
-    user_submission_2 = st.text_area("Across all three years (2023, 2022, 2021), what’s the total nitrogen oxides generation?")
-    if st.button("Submit"):
-        if validate_submission(user_submission_1):
-            st.success("Solution submitted successfully!")
+    st.subheader("Challenge #1")
+    user_submission_1 = st.text_area("Write a prompt to find what percentage of electricity supplied to customers by Drax came from renewable sources in 2023. ")
+    if st.button("Check Answer", key=1):
+        if validate_submission(user_submission_1, 1):
+            st.success("Correct! Challenge #1 is complete.")
             is_challenge_1_complete = True
         else:
-            st.error("Invalid submission. Please check your solution.")
+            st.error("Incorrect! Please try again.")
+    
+    st.subheader("Challenge #2")
+    user_submission_2 = st.text_area("Write a prompt to calculate the total reduction in Carbon emissions (in ktCO2e) from Generation between the earliest and most recent years provided in the report. Express this reduction in kilotonnes, as a positive number. ")
+    if st.button("Check Answer", key=2):
+        if validate_submission(user_submission_2, 2):
+            st.success("Correct! Challenge #1 is complete.")
+            is_challenge_2_complete = True
+        else:
+            st.error("Incorrect! Please try again.")
+    
 
-    if is_challenge_1_complete:
-        with st.expander("Bonus Challenge"):
-            user_submission_bonus = st.text_area("Bonus Challenge: Copy-Paste Your Solution Here")
-            st.button("Submit Bonus Challenge")
+    st.subheader("Bonus Challenge: ")
+    user_submission_3 = st.text_area("Write a prompt to identify which activity (power generation or pellet production) contributes more to nitrogen oxides (NOx) emissions per tonne of biomass used. Provide the name of the activity. ")
+    if st.button("Check Answer", key=3):
+        if validate_submission(user_submission_3, 3):
+            st.success("Correct! Bonus Challenge is complete.")
+            is_challenge_3_complete = True
+        else:
+            st.error("Incorrect! Please try again.")
+            
+    if st.button("Submit All Answers"):
+        if validate_submission(user_submission_1, 1) and validate_submission(user_submission_2, 2) and validate_submission(user_submission_3, 3):
+            st.success("Congratulations! You have completed all challenges. Please submit your feedback below.")
+        else:
+            st.warning("Please complete all challenges before submitting.")
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    if is_challenge_1_complete and is_challenge_2_complete and is_challenge_3_complete:
+        st.success("Congratulations! You have completed all challenges. Please submit your feedback below.")
+        # Feedback form
+        st.subheader("Workshop Feedback")
+        with st.expander("Share Your Feedback"):
+            email = st.text_input("Email Address")
+            role = st.selectbox(
+                "Your Role",
+                ["Student", "Professional", "Academic", "Other"]
+            )
+            follow_up = st.selectbox(
+                "Would you like to:",
+                ["Receive workshop materials", "Join future workshops", "Connect with mentors", "None"]
+            )
+            feedback = st.text_area("Additional Comments")
+            
+            if st.button("Submit Feedback"):
+                if email and feedback:
+                    st.success("Thank you for your feedback!")
+                else:
+                    st.warning("Please fill in all required fields.")
 
-    # Feedback form
-    st.subheader("Workshop Feedback")
-    with st.expander("Share Your Feedback"):
-        email = st.text_input("Email Address")
-        role = st.selectbox(
-            "Your Role",
-            ["Student", "Professional", "Academic", "Other"]
-        )
-        follow_up = st.selectbox(
-            "Would you like to:",
-            ["Receive workshop materials", "Join future workshops", "Connect with mentors", "None"]
-        )
-        feedback = st.text_area("Additional Comments")
-        
-        if st.button("Submit Feedback"):
-            if email and feedback:
-                st.success("Thank you for your feedback!")
-            else:
-                st.warning("Please fill in all required fields.")
 
-
-leaderboard = pd.DataFrame(get_sample_leaderboard())
-st.subheader("Leaderboard")
-st.dataframe(leaderboard)
+        leaderboard = pd.DataFrame(get_sample_leaderboard())
+        st.subheader("Leaderboard")
+        st.dataframe(leaderboard)
 
 # Add some styling
 # st.markdown("""
