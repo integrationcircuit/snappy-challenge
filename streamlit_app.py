@@ -50,10 +50,11 @@ def get_credentials() -> Dict[str, str]:
 def get_workshop_tips() -> List[str]:
     """Return workshop tips."""
     return [
-        "Start with the provided template code to save time",
+        "Click on the \"Prompt Generator\" Snap to edit your prompt (the Yellow icon)",
         "Make sure to test your solution with different input formats",
-        "Don't forget to handle edge cases in your implementation",
-        "Use the documentation resources available at docs.example.com"
+        "When viewing a data preview (light green icon at the end of our process), click \"Formatted\" for better readability",
+        "Ask questions in the chat or live - your hosts are here to help",
+        "Guidance Documentation URL will be added here soon"
     ]
     
 def get_sample_prompts() -> List[str]:
@@ -106,12 +107,14 @@ if len(team_name) > 0:
     st.subheader("Workshop Materials")
     st.link_button("Preview Workshop Materials", url="https://www.drax.com/wp-content/uploads/2024/03/Final-Signed-ESG-2023-Supplement.pdf")
     # Tips section
-    with st.expander("Tips "):
+    
+    with st.expander("Tips (click to expand) "):
         for tip in get_workshop_tips():
             st.markdown(f"• {tip}")
-    with st.expander("Sample Prompts"):
-        for prompt in get_sample_prompts():
-            st.write(prompt)
+            
+    # with st.expander("Sample Prompts"):
+    #     for prompt in get_sample_prompts():
+    #         st.write(prompt)
 
     # Submission form
     st.subheader("Submit Your Answers")
@@ -134,7 +137,7 @@ if len(team_name) > 0:
             st.error("Incorrect! Please try again.")
     
 
-    st.subheader("Bonus Challenge: ")
+    st.subheader("Challenge #3")
     user_submission_3 = st.text_area("Write a prompt to identify which activity (power generation or pellet production) contributes more to nitrogen oxides (NOx) emissions per tonne of biomass used. Provide the name of the activity. ")
     if st.button("Check Answer", key=3):
         if validate_submission(user_submission_3, 3):
