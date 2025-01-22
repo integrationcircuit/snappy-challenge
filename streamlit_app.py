@@ -201,7 +201,7 @@ if len(team_name) > 0:
     
     if st.session_state["all_challenges_complete"]:
         st.success("Congratulations! You have completed all challenges. Please submit your feedback below.")
-        st.info("We enrourage you to experiment with SnapLogic and explore the data further - find the most interesting question to be answered by AI.")
+        st.info("We encourage you to experiment with SnapLogic and explore the data further - find the most interesting question to be answered by AI.")
         fd.show_registration_form(st.session_state['team_name'])
         
     
