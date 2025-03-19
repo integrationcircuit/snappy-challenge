@@ -154,6 +154,7 @@ if len(user_email) > 0:
     st.divider()
     
     st.subheader("Challenge #2")
+    st.divider()
     st.write("Your second task is to look through all of your invoices to identify the invoices where the total cost of products does not match the total charged invoice price.")
     st.write("You have been overcharged in one invoice and undercharged in one invoice.")
     st.write("You need to identify the invoice where you were overcharged (charged amount was more than the total product cost) and identify the invoice where you were undercharged (charged amount was less than the total product cost)")
@@ -161,11 +162,11 @@ if len(user_email) > 0:
     st.write("Use the following invoices to answer the questions:")
     col1,col2,col3 = st.columns(3)
     with col1:
-        st.link_button("View Invoice", url="https://escaperoom.snapdemo.site/game/invoice/cb249e16-8c3f-4225-a679-4b0e46dea7ef")
+        st.link_button("View Invoice 1", url="https://escaperoom.snapdemo.site/game/invoice/cb249e16-8c3f-4225-a679-4b0e46dea7ef")
     with col2:
-        st.link_button("View Invoice", url="https://escaperoom.snapdemo.site/game/invoice/cb249e16-8c3f-4225-a679-4b0e46dea7ef")
+        st.link_button("View Invoice 2", url="https://escaperoom.snapdemo.site/game/invoice/d6c89ec2-0059-4bd3-b5fd-9e15ba2fef52")
     with col3:
-        st.link_button("View Invoice", url="https://escaperoom.snapdemo.site/game/invoice/cb249e16-8c3f-4225-a679-4b0e46dea7ef")
+        st.link_button("View Invoice 3", url="https://escaperoom.snapdemo.site/game/invoice/ef087b47-7257-4845-9dee-b01b6bcc4c33")
     st.divider()
     col1, col2 = st.columns(2)
     with col1:
@@ -185,13 +186,14 @@ if len(user_email) > 0:
     st.divider()
 
     st.subheader("Challenge #3")
+    st.divider()
     st.write("Your third task is to put together an email to send to your suppliers (named in the invoices) who you overpaid and underpaid")
     st.write("This message should elaborate how you will pay them the difference in the product cost and charged amount or how you expect to get reimbursement for the overpayment.")
     st.write("Your email body should include the customer's name, the invoice ID, the total cost that should have been charged, and the charged amount.")
     st.divider()
     
-    user_submission_3_1 = st.text_area("Overpaid Supplier Email Body")
-    user_submission_3_2 = st.text_area("Underpaid Supplier Email Body")
+    user_submission_3_1 = st.text_area("Overcharged Supplier Email Body")
+    user_submission_3_2 = st.text_area("Undercharged Supplier Email Body")
     if st.button("Check Answer", key=3):
         if validate_submission(user_submission_3_1, 3.1) and validate_submission(user_submission_3_2, 3.2):
             # st.success("Correct! Challenge #3 is complete.")
